@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Environments
+.venv/
+venv/
+.env
+
+# Run outputs (training logs, checkpoints, wandb, Hydra)
+logs/
+outputs/
+multirun/
+wandb/
+runs/
+videos/
+*.pt
+*.pth
+*.ckpt
+*.zip
+*.pkl
+nohup.out
+
+# Editors / OS
+.vscode/
+.idea/
+.ipynb_checkpoints/
+.DS_Store

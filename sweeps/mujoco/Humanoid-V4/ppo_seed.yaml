@@ -14,7 +14,7 @@ parameters:
   training.seed:
     values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   training.total_timesteps:
-    values: [20000000]
+    values: [40000000]
   env.n_envs:
     values: [1]
   algo.n_steps:

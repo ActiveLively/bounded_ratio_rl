@@ -1,6 +1,6 @@
 # @package algo
 _convert_: all
-_target_: stable_baselines3.PPO
+_target_: sb3.RatioStatsPPO
 policy: "CnnPolicy"
 policy_kwargs:
   share_features_extractor: True

@@ -14,6 +14,7 @@ from stable_baselines3.common.policies import (
     MultiInputActorCriticPolicy,
 )
 from .policy import BPOPolicy, BPOCnnPolicy
+from .ratio_stats import record_ratio_stats
 from stable_baselines3.common.buffers import RolloutBuffer
 from stable_baselines3.common.type_aliases import GymEnv, MaybeCallback, Schedule
 from torch.nn import functional as F
@@ -300,6 +301,7 @@ class BPO(OnPolicyAlgorithm):
             self.logger.record("train/std", th.exp(self.policy.log_std).mean().item())
 
         self.logger.record("train/n_updates", self._n_updates, exclude="tensorboard")
+        record_ratio_stats(self)
 
     def collect_rollouts(
         self,

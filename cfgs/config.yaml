@@ -5,7 +5,7 @@ defaults:
 
 wandb:
   project: BPO
-  entity: {your-entity-name}
+  entity: null  # null = your wandb default entity
   monitor_gym: true
   save_code: true
 
@@ -14,3 +14,5 @@ training:
   gradient_save_freq: 100_000
   n_envs: 8
   seed: 42
+  max_hours: null  # optional wall-clock cap per run
+  resume: null  # wandb run id: continue that run from its saved model up to total_timesteps

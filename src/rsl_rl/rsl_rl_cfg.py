@@ -72,8 +72,8 @@ class RslRlBPOAlgorithmCfg:
     max_grad_norm: float = MISSING
     """The maximum gradient norm."""
     
-    reg_w: float = 0.01
-    """The regularization weight for entropy"""
+    reg_w: float = 0.001
+    """The regularization weight lambda for the target ratio (paper Table 2: 0.001)."""
 
     use_median: bool = True
     """Whether to use median for optimal ratio."""

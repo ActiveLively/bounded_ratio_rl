@@ -24,7 +24,7 @@ parameters:
   algo.n_epochs:
     values: [4]
   algo.clip_range:
-    values: [0.1]
+    values: [0.2]
   algo.vf_coef:
     values: [0.5]
   algo.ent_coef:
