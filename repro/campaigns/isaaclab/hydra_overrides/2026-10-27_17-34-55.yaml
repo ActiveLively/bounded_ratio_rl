@@ -1,0 +1,3 @@
+- agent.save_interval=500
+- agent.seed=2
+- agent.algorithm.tv_loss_coef=10.0

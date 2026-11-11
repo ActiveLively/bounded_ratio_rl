@@ -1,0 +1,250 @@
+--- git status ---
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   cfgs/algo/ppo/atari.yaml
+	modified:   cfgs/algo/ppo/mujoco.yaml
+	modified:   cfgs/config.yaml
+	modified:   src/rsl_rl/rsl_rl_cfg.py
+	modified:   src/sb3/BPO.py
+	modified:   src/sb3/__init__.py
+	modified:   sweeps/atari/ppo_seed.yaml
+	modified:   sweeps/mujoco/Humanoid-V4/bpo_seed.yaml
+	modified:   sweeps/mujoco/Humanoid-V4/ppo_seed.yaml
+	modified:   train.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	REPRODUCTION_NOTES.md
+	__pycache__/
+	cfgs/__pycache__/
+	cfgs/algo/__pycache__/
+	cfgs/algo/bpo/__pycache__/
+	cfgs/algo/bpo/isaaclab/__pycache__/
+	logs/
+	outputs/
+	scripts/repro_launcher.py
+	src/Bounded_Policy_Optimization.egg-info/
+	src/rsl_rl/__pycache__/
+	src/sb3/__pycache__/
+	src/sb3/ratio_stats.py
+	sweeps/mujoco/Hopper-V4/bpo_seed_lambda_paper.yaml
+	utils/__pycache__/
+	wandb/
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/cfgs/algo/ppo/atari.yaml b/cfgs/algo/ppo/atari.yaml
+index 1e22da4..7f51b1f 100644
+--- a/cfgs/algo/ppo/atari.yaml
++++ b/cfgs/algo/ppo/atari.yaml
+@@ -1,6 +1,6 @@
+ # @package algo
+ _convert_: all
+-_target_: stable_baselines3.PPO
++_target_: sb3.RatioStatsPPO
+ policy: "CnnPolicy"
+ policy_kwargs:
+   share_features_extractor: True
+diff --git a/cfgs/algo/ppo/mujoco.yaml b/cfgs/algo/ppo/mujoco.yaml
+index 856dc64..21074dd 100644
+--- a/cfgs/algo/ppo/mujoco.yaml
++++ b/cfgs/algo/ppo/mujoco.yaml
+@@ -1,6 +1,6 @@
+ # @package algo
+ _convert_: all
+-_target_: stable_baselines3.PPO
++_target_: sb3.RatioStatsPPO
+ policy: "MlpPolicy"
+ policy_kwargs:
+   ortho_init: true
+diff --git a/cfgs/config.yaml b/cfgs/config.yaml
+index 5ed37db..0130a81 100644
+--- a/cfgs/config.yaml
++++ b/cfgs/config.yaml
+@@ -5,7 +5,7 @@ defaults:
+ 
+ wandb:
+   project: BPO
+-  entity: {your-entity-name}
++  entity: null  # null = your wandb default entity
+   monitor_gym: true
+   save_code: true
+ 
+diff --git a/src/rsl_rl/rsl_rl_cfg.py b/src/rsl_rl/rsl_rl_cfg.py
+index 82613cc..c0007b5 100644
+--- a/src/rsl_rl/rsl_rl_cfg.py
++++ b/src/rsl_rl/rsl_rl_cfg.py
+@@ -72,8 +72,8 @@ class RslRlBPOAlgorithmCfg:
+     max_grad_norm: float = MISSING
+     """The maximum gradient norm."""
+     
+-    reg_w: float = 0.01
+-    """The regularization weight for entropy"""
++    reg_w: float = 0.001
++    """The regularization weight lambda for the target ratio (paper Table 2: 0.001)."""
+ 
+     use_median: bool = True
+     """Whether to use median for optimal ratio."""
+diff --git a/src/sb3/BPO.py b/src/sb3/BPO.py
+index 22efe57..d0eb2db 100644
+--- a/src/sb3/BPO.py
++++ b/src/sb3/BPO.py
+@@ -14,6 +14,7 @@ from stable_baselines3.common.policies import (
+     MultiInputActorCriticPolicy,
+ )
+ from .policy import BPOPolicy, BPOCnnPolicy
++from .ratio_stats import record_ratio_stats
+ from stable_baselines3.common.buffers import RolloutBuffer
+ from stable_baselines3.common.type_aliases import GymEnv, MaybeCallback, Schedule
+ from torch.nn import functional as F
+@@ -300,6 +301,7 @@ class BPO(OnPolicyAlgorithm):
+             self.logger.record("train/std", th.exp(self.policy.log_std).mean().item())
+ 
+         self.logger.record("train/n_updates", self._n_updates, exclude="tensorboard")
++        record_ratio_stats(self)
+ 
+     def collect_rollouts(
+         self,
+diff --git a/src/sb3/__init__.py b/src/sb3/__init__.py
+index 6201b37..da5cc0b 100644
+--- a/src/sb3/__init__.py
++++ b/src/sb3/__init__.py
+@@ -1,2 +1,3 @@
+ from .BPO import BPO
+-from .policy import BPOPolicy, BPOCnnPolicy
+\ No newline at end of file
++from .policy import BPOPolicy, BPOCnnPolicy
++from .ratio_stats import RatioStatsPPO
+diff --git a/sweeps/atari/ppo_seed.yaml b/sweeps/atari/ppo_seed.yaml
+index 6d2a9d9..267e737 100644
+--- a/sweeps/atari/ppo_seed.yaml
++++ b/sweeps/atari/ppo_seed.yaml
+@@ -24,7 +24,7 @@ parameters:
+   algo.n_epochs:
+     values: [4]
+   algo.clip_range:
+-    values: [0.1]
++    values: [0.2]
+   algo.vf_coef:
+     values: [0.5]
+   algo.ent_coef:
+diff --git a/sweeps/mujoco/Humanoid-V4/bpo_seed.yaml b/sweeps/mujoco/Humanoid-V4/bpo_seed.yaml
+index fd7441b..ea84e3b 100644
+--- a/sweeps/mujoco/Humanoid-V4/bpo_seed.yaml
++++ b/sweeps/mujoco/Humanoid-V4/bpo_seed.yaml
+@@ -12,7 +12,7 @@ parameters:
+   env.env_id:
+     values: ["Humanoid-v4"]
+   training.total_timesteps:
+-    values: [50000000]
++    values: [40000000]
+   training.seed:
+     values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+   env.n_envs:
+diff --git a/sweeps/mujoco/Humanoid-V4/ppo_seed.yaml b/sweeps/mujoco/Humanoid-V4/ppo_seed.yaml
+index 22da03e..b4bd72a 100644
+--- a/sweeps/mujoco/Humanoid-V4/ppo_seed.yaml
++++ b/sweeps/mujoco/Humanoid-V4/ppo_seed.yaml
+@@ -14,7 +14,7 @@ parameters:
+   training.seed:
+     values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+   training.total_timesteps:
+-    values: [20000000]
++    values: [40000000]
+   env.n_envs:
+     values: [1]
+   algo.n_steps:
+diff --git a/train.py b/train.py
+index c51a6c7..61175e7 100644
+--- a/train.py
++++ b/train.py
+@@ -1,4 +1,6 @@
++import glob
+ import gymnasium as gym
++from stable_baselines3.common.callbacks import BaseCallback
+ from stable_baselines3.common.vec_env import VecVideoRecorder
+ import wandb
+ from wandb.integration.sb3 import WandbCallback
+@@ -9,6 +11,28 @@ import ale_py
+ 
+ gym.register_envs(ale_py)
+ 
++
++class VideoUploadCallback(BaseCallback):
++    """Log each finished clip to wandb; monitor_gym doesn't hook SB3's recorder."""
++
++    def __init__(self, video_dir: str):
++        super().__init__()
++        self.video_dir = video_dir
++        self.uploaded = set()
++
++    def upload_new(self) -> None:
++        for path in sorted(glob.glob(f"{self.video_dir}/*.mp4")):
++            if path not in self.uploaded:
++                self.uploaded.add(path)
++                wandb.log({"videos": wandb.Video(path, format="mp4")})
++
++    def _on_rollout_end(self) -> None:
++        self.upload_new()
++
++    def _on_step(self) -> bool:
++        return True
++
++
+ @hydra.main(version_base=None, config_path="cfgs", config_name="config")
+ def main(cfg : DictConfig):
+     config = OmegaConf.to_container(cfg, resolve=True)
+@@ -17,24 +41,39 @@ def main(cfg : DictConfig):
+     wandb_cfg['config'] = config
+     run = wandb.init(**wandb_cfg, sync_tensorboard=True )
+     env = instantiate(cfg.env)
++    # One clip ending at 25%, 50%, 75% and 100% of training.
++    # The recorder counts vectorized steps, i.e. total_timesteps / n_envs.
++    video_length = 300
++    total_steps = cfg.training.total_timesteps // env.num_envs
++    video_starts = {
++        max(int(total_steps * frac) - video_length, 0)
++        for frac in (0.25, 0.5, 0.75, 1.0)
++    }
++    video_dir = f"videos/{run.id}"
+     env = VecVideoRecorder(
+         env,
+-        f"videos/{run.id}",
+-        record_video_trigger=lambda x: x % 1000000 == 0,
+-        video_length=300,
++        video_dir,
++        record_video_trigger=lambda x: x in video_starts,
++        video_length=video_length,
+     )
++    video_callback = VideoUploadCallback(video_dir)
+ 
+     algo_cfg = OmegaConf.to_container(cfg.algo, resolve=True)
+     algo_cfg['tensorboard_log'] = f"runs/{run.id}"
+     model = instantiate(algo_cfg, env=env)
+     model.learn(
+         total_timesteps=cfg.training.total_timesteps,
+-        callback=WandbCallback(
+-            gradient_save_freq=cfg.training.gradient_save_freq,
+-            model_save_path=f"models/{run.id}",
+-            verbose=2,
+-        ),
++        callback=[
++            WandbCallback(
++                gradient_save_freq=cfg.training.gradient_save_freq,
++                model_save_path=f"models/{run.id}",
++                verbose=2,
++            ),
++            video_callback,
++        ],
+     )
++    env.close()  # flushes the final clip if training stopped mid-recording
++    video_callback.upload_new()
+     run.finish()
+ 
+ 

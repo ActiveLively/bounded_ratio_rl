@@ -1,0 +1,87 @@
+/home2/hua48722/GitHub/bounded_ratio_rl/.venv/lib/python3.10/site-packages/gymnasium/envs/registration.py:512: DeprecationWarning: [33mWARN: The environment Hopper-v4 is out of date. You should consider upgrading to version `v5`.[0m
+  logger.deprecation(
+algo:
+  _convert_: all
+  _target_: sb3.BPO
+  policy: BPOPolicy
+  policy_kwargs:
+    ortho_init: true
+    activation_fn:
+      _target_: hydra.utils.get_class
+      path: torch.nn.ReLU
+    net_arch:
+      pi:
+      - 256
+      - 256
+      vf:
+      - 256
+      - 256
+    log_std_init: 0.0
+  learning_rate: 9.808e-05
+  batch_size: 32
+  n_steps: 512
+  n_epochs: 10
+  gamma: 0.999
+  gae_lambda: 0.95
+  lambda_: 10.0
+  ent_coef: 0.0
+  vf_coef: 0.5
+  u_coef: 0.5
+  clip_ratio: 0.25
+  verbose: 1
+  max_grad_norm: 1.0
+  use_median: true
+  device: cpu
+  seed: 3
+env:
+  _target_: sb3.env_factory.create_mujoco_env
+  env_id: Hopper-v4
+  n_envs: 4
+  render_mode: rgb_array
+  seed: ${training.seed}
+wandb:
+  project: BPO-repro-mujoco
+  entity: null
+  monitor_gym: true
+  save_code: true
+  name: Hopper-v4-bpo-s3
+  group: Hopper-v4-bpo
+training:
+  total_timesteps: 40000000
+  gradient_save_freq: 100000
+  n_envs: 8
+  seed: 3
+  max_hours: null
+  resume: null
+
+[2026-10-24 10:37:42,939][OpenGL.acceleratesupport][INFO] - No OpenGL_accelerate module loaded: No module named 'OpenGL_accelerate'
+Using cpu device
+FlattenExtractor(
+  (flatten): Flatten(start_dim=1, end_dim=-1)
+)
+Logging to runs/mvnc01me/BPO_1
+... [468730 lines elided] ...
+------------------------------------------
+| rollout/                |              |
+|    ep_len_mean          | 835          |
+|    ep_rew_mean          | 3.12e+03     |
+| time/                   |              |
+|    fps                  | 309          |
+|    iterations           | 19532        |
+|    time_elapsed         | 129242       |
+|    total_timesteps      | 40001536     |
+| train/                  |              |
+|    approx_kl            | 0.0066003716 |
+|    clip_ratio           | 0.25         |
+|    entropy_loss         | -1.18        |
+|    lambda               | 10           |
+|    learning_rate        | 9.81e-05     |
+|    loss                 | 1.79e+04     |
+|    n_updates            | 195310       |
+|    policy_gradient_loss | 30.7         |
+|    ratio_high           | 1.08         |
+|    ratio_low            | 0.92         |
+|    std                  | 0.363        |
+|    u_loss               | 67.9         |
+|    value_loss           | 1.13e+05     |
+------------------------------------------

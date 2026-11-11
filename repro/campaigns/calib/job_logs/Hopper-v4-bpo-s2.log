@@ -1,0 +1,87 @@
+/home2/hua48722/GitHub/bounded_ratio_rl/.venv/lib/python3.10/site-packages/gymnasium/envs/registration.py:512: DeprecationWarning: [33mWARN: The environment Hopper-v4 is out of date. You should consider upgrading to version `v5`.[0m
+  logger.deprecation(
+algo:
+  _convert_: all
+  _target_: sb3.BPO
+  policy: BPOPolicy
+  policy_kwargs:
+    ortho_init: true
+    activation_fn:
+      _target_: hydra.utils.get_class
+      path: torch.nn.ReLU
+    net_arch:
+      pi:
+      - 256
+      - 256
+      vf:
+      - 256
+      - 256
+    log_std_init: 0.0
+  learning_rate: 9.808e-05
+  batch_size: 32
+  n_steps: 512
+  n_epochs: 10
+  gamma: 0.999
+  gae_lambda: 0.95
+  lambda_: 10.0
+  ent_coef: 0.0
+  vf_coef: 0.5
+  u_coef: 0.5
+  clip_ratio: 0.25
+  verbose: 1
+  max_grad_norm: 1.0
+  use_median: true
+  device: cpu
+  seed: 2
+env:
+  _target_: sb3.env_factory.create_mujoco_env
+  env_id: Hopper-v4
+  n_envs: 4
+  render_mode: rgb_array
+  seed: ${training.seed}
+wandb:
+  project: BPO-calib-mujoco
+  entity: null
+  monitor_gym: true
+  save_code: true
+  name: Hopper-v4-bpo-s2
+  group: Hopper-v4-bpo
+training:
+  total_timesteps: 2000000
+  gradient_save_freq: 100000
+  n_envs: 8
+  seed: 2
+
+[2026-10-21 18:29:49,715][OpenGL.platform.ctypesloader][INFO] - Failed to load library ( 'libOpenGL.so.0' ): /lib64/libOpenGL.so.0: undefined symbol: _glapi_tls_Current
+[2026-10-21 18:29:49,718][OpenGL.acceleratesupport][INFO] - No OpenGL_accelerate module loaded: No module named 'OpenGL_accelerate'
+[2026-10-21 18:29:49,877][OpenGL.platform.ctypesloader][INFO] - Failed to load library ( 'libOpenGL.so.0' ): /lib64/libOpenGL.so.0: undefined symbol: _glapi_tls_Current
+Using cpu device
+FlattenExtractor(
+  (flatten): Flatten(start_dim=1, end_dim=-1)
+)
+Logging to runs/qn25kxjn/BPO_1
+... [5146 lines elided] ...
+------------------------------------------
+| rollout/                |              |
+|    ep_len_mean          | 916          |
+|    ep_rew_mean          | 2.34e+03     |
+| time/                   |              |
+|    fps                  | 448          |
+|    iterations           | 216          |
+|    time_elapsed         | 985          |
+|    total_timesteps      | 442368       |
+| train/                  |              |
+|    approx_kl            | 0.0033194746 |
+|    clip_ratio           | 0.25         |
+|    entropy_loss         | -3.04        |
+|    lambda               | 10           |
+|    learning_rate        | 9.81e-05     |
+|    loss                 | 96.6         |
+|    n_updates            | 2150         |
+|    policy_gradient_loss | 1.63         |
+|    ratio_high           | 1.06         |
+|    ratio_low            | 0.941        |
+|    std                  | 0.667        |
+|    u_loss               | 6.02         |
+|    value_loss           | 526          |
+------------------------------------------

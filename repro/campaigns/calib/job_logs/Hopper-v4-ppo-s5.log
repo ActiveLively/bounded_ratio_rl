@@ -1,0 +1,64 @@
+/home2/hua48722/GitHub/bounded_ratio_rl/.venv/lib/python3.10/site-packages/gymnasium/envs/registration.py:512: DeprecationWarning: [33mWARN: The environment Hopper-v4 is out of date. You should consider upgrading to version `v5`.[0m
+  logger.deprecation(
+algo:
+  _convert_: all
+  _target_: sb3.RatioStatsPPO
+  policy: MlpPolicy
+  policy_kwargs:
+    ortho_init: true
+    activation_fn:
+      _target_: hydra.utils.get_class
+      path: torch.nn.ReLU
+    net_arch:
+      pi:
+      - 256
+      - 256
+      vf:
+      - 256
+      - 256
+    log_std_init: 0.0
+  batch_size: 32
+  gae_lambda: 0.99
+  n_steps: 512
+  gamma: 0.999
+  n_epochs: 5
+  ent_coef: 0.00229519
+  learning_rate: 9.808e-05
+  clip_range: 0.2
+  max_grad_norm: 0.7
+  vf_coef: 0.835671
+  normalize_advantage: true
+  device: cpu
+  seed: 5
+env:
+  _target_: sb3.env_factory.create_mujoco_env
+  env_id: Hopper-v4
+  n_envs: 1
+  render_mode: rgb_array
+  seed: ${training.seed}
+wandb:
+  project: BPO-calib-mujoco
+  entity: null
+  monitor_gym: true
+  save_code: true
+  name: Hopper-v4-ppo-s5
+  group: Hopper-v4-ppo
+training:
+  total_timesteps: 2000000
+  gradient_save_freq: 100000
+  n_envs: 8
+  seed: 5
+
+[2026-10-21 18:29:56,407][OpenGL.platform.ctypesloader][INFO] - Failed to load library ( 'libOpenGL.so.0' ): /lib64/libOpenGL.so.0: undefined symbol: _glapi_tls_Current
+[2026-10-21 18:29:56,410][OpenGL.acceleratesupport][INFO] - No OpenGL_accelerate module loaded: No module named 'OpenGL_accelerate'
+[2026-10-21 18:29:56,605][OpenGL.platform.ctypesloader][INFO] - Failed to load library ( 'libOpenGL.so.0' ): /lib64/libOpenGL.so.0: undefined symbol: _glapi_tls_Current
+Saving video to /home2/hua48722/bpo_repro_calib/sb3/videos/14e54u5t/rl-video-step-499700-to-step-500000.mp4
+MoviePy - Building video /home2/hua48722/bpo_repro_calib/sb3/videos/14e54u5t/rl-video-step-499700-to-step-500000.mp4.
+MoviePy - Writing video /home2/hua48722/bpo_repro_calib/sb3/videos/14e54u5t/rl-video-step-499700-to-step-500000.mp4
+
+
+frame_index:   0%|          | 0/301 [00:00<?, ?it/s, now=None]
+frame_index:  28%|██▊       | 83/301 [00:00<00:00, 825.86it/s, now=None]
+frame_index:  55%|█████▌    | 166/301 [00:00<00:00, 814.41it/s, now=None]
+frame_index:  82%|████████▏ | 248/301 [00:00<00:00, 788.70it/s, now=None]
+                                                                         

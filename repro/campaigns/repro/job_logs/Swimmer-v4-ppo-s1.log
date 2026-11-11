@@ -1,0 +1,54 @@
+/home2/hua48722/GitHub/bounded_ratio_rl/.venv/lib/python3.10/site-packages/gymnasium/envs/registration.py:512: DeprecationWarning: [33mWARN: The environment Swimmer-v4 is out of date. You should consider upgrading to version `v5`.[0m
+  logger.deprecation(
+algo:
+  _convert_: all
+  _target_: sb3.RatioStatsPPO
+  policy: MlpPolicy
+  policy_kwargs:
+    ortho_init: true
+    activation_fn:
+      _target_: hydra.utils.get_class
+      path: torch.nn.ReLU
+    net_arch:
+      pi:
+      - 256
+      - 256
+      vf:
+      - 256
+      - 256
+    log_std_init: 0.0
+  batch_size: 256
+  gae_lambda: 0.98
+  n_steps: 1024
+  gamma: 0.9999
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: 0.0006
+  clip_range: 0.1
+  max_grad_norm: 0.5
+  vf_coef: 0.5
+  normalize_advantage: true
+  device: cpu
+  seed: 1
+env:
+  _target_: sb3.env_factory.create_mujoco_env
+  env_id: Swimmer-v4
+  n_envs: 4
+  render_mode: rgb_array
+  seed: ${training.seed}
+wandb:
+  project: BPO-repro-mujoco
+  entity: null
+  monitor_gym: true
+  save_code: true
+  name: Swimmer-v4-ppo-s1
+  group: Swimmer-v4-ppo
+training:
+  total_timesteps: 40000000
+  gradient_save_freq: 100000
+  n_envs: 8
+  seed: 1
+  max_hours: null
+  resume: null
+
+[2026-10-25 16:46:03,167][OpenGL.acceleratesupport][INFO] - No OpenGL_accelerate module loaded: No module named 'OpenGL_accelerate'

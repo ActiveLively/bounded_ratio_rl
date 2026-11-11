@@ -1,0 +1,87 @@
+/home2/hua48722/GitHub/bounded_ratio_rl/.venv/lib/python3.10/site-packages/gymnasium/envs/registration.py:512: DeprecationWarning: [33mWARN: The environment Humanoid-v4 is out of date. You should consider upgrading to version `v5`.[0m
+  logger.deprecation(
+algo:
+  _convert_: all
+  _target_: sb3.BPO
+  policy: BPOPolicy
+  policy_kwargs:
+    ortho_init: true
+    activation_fn:
+      _target_: hydra.utils.get_class
+      path: torch.nn.ReLU
+    net_arch:
+      pi:
+      - 256
+      - 256
+      vf:
+      - 256
+      - 256
+    log_std_init: 0.0
+  learning_rate: 0.0001
+  batch_size: 128
+  n_steps: 512
+  n_epochs: 5
+  gamma: 0.99
+  gae_lambda: 0.95
+  lambda_: 0.001
+  ent_coef: 0.0
+  vf_coef: 0.5
+  u_coef: 0.5
+  clip_ratio: 0.2
+  verbose: 1
+  max_grad_norm: 2.0
+  use_median: true
+  device: cpu
+  seed: 5
+env:
+  _target_: sb3.env_factory.create_mujoco_env
+  env_id: Humanoid-v4
+  n_envs: 1
+  render_mode: rgb_array
+  seed: ${training.seed}
+wandb:
+  project: BPO-repro-mujoco
+  entity: null
+  monitor_gym: true
+  save_code: true
+  name: Humanoid-v4-bpo-s5
+  group: Humanoid-v4-bpo
+training:
+  total_timesteps: 40000000
+  gradient_save_freq: 100000
+  n_envs: 8
+  seed: 5
+  max_hours: null
+  resume: null
+
+[2026-10-24 09:14:27,490][OpenGL.acceleratesupport][INFO] - No OpenGL_accelerate module loaded: No module named 'OpenGL_accelerate'
+Using cpu device
+FlattenExtractor(
+  (flatten): Flatten(start_dim=1, end_dim=-1)
+)
+Logging to runs/69ued5ae/BPO_1
+... [1874962 lines elided] ...
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 157         |
+|    ep_rew_mean          | 861         |
+| time/                   |             |
+|    fps                  | 630         |
+|    iterations           | 78125       |
+|    time_elapsed         | 63410       |
+|    total_timesteps      | 40000000    |
+| train/                  |             |
+|    approx_kl            | 0.027102914 |
+|    clip_ratio           | 0.2         |
+|    entropy_loss         | -8.44       |
+|    lambda               | 0.001       |
+|    learning_rate        | 0.0001      |
+|    loss                 | 54.6        |
+|    n_updates            | 390620      |
+|    policy_gradient_loss | 1.83        |
+|    ratio_high           | 1.13        |
+|    ratio_low            | 0.856       |
+|    std                  | 0.422       |
+|    u_loss               | 4.92        |
+|    value_loss           | 170         |
+-----------------------------------------

@@ -1,0 +1,10 @@
+- algo=sac
+- env.env_id=Swimmer-v4
+- training.seed=5
+- algo.learning_starts=10000
+- env=mujoco
+- ++algo.device=cpu
+- training.max_hours=48.0
+- wandb.project=BPO-repro-mujoco
+- ++wandb.name=Swimmer-v4-sac-s5
+- ++wandb.group=Swimmer-v4-sac

@@ -1,0 +1,58 @@
+A.L.E: Arcade Learning Environment (version 0.12.1+8a8fafb)
+[Powered by Stella]
+algo:
+  _convert_: all
+  _target_: stable_baselines3.DQN
+  policy: CnnPolicy
+  buffer_size: 100000
+  learning_rate: 0.0001
+  seed: ${training.seed}
+  verbose: 1
+  batch_size: 32
+  learning_starts: 100000
+  target_update_interval: 1000
+  train_freq: 4
+  gradient_steps: 1
+  exploration_fraction: 0.1
+  exploration_final_eps: 0.01
+  optimize_memory_usage: false
+  device: cpu
+env:
+  _target_: sb3.env_factory.create_atari_env
+  env_id: PongNoFrameskip-v4
+  n_envs: 1
+  n_stack: 4
+  seed: ${training.seed}
+wandb:
+  project: BPO-repro-atari
+  entity: null
+  monitor_gym: true
+  save_code: true
+  name: PongNoFrameskip-v4-dqn-s5
+  group: PongNoFrameskip-v4-dqn
+training:
+  total_timesteps: 40000000
+  gradient_save_freq: 100000
+  n_envs: 8
+  seed: 5
+  max_hours: 48.0
+
+Using cpu device
+Wrapping the env in a VecTransposeImage.
+Logging to runs/mxpqpfuo/DQN_1
+... [11652 lines elided] ...
+----------------------------------
+| rollout/            |          |
+|    ep_len_mean      | 6.77e+03 |
+|    ep_rew_mean      | 20.4     |
+|    exploration_rate | 0.01     |
+| time/               |          |
+|    episodes         | 3140     |
+|    fps              | 29       |
+|    time_elapsed     | 172696   |
+|    total_timesteps  | 5018574  |
+| train/              |          |
+|    learning_rate    | 0.0001   |
+|    loss             | 9.45e-05 |
+|    n_updates        | 1229643  |
+----------------------------------

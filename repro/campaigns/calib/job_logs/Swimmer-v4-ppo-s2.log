@@ -1,0 +1,106 @@
+/home2/hua48722/GitHub/bounded_ratio_rl/.venv/lib/python3.10/site-packages/gymnasium/envs/registration.py:512: DeprecationWarning: [33mWARN: The environment Swimmer-v4 is out of date. You should consider upgrading to version `v5`.[0m
+  logger.deprecation(
+algo:
+  _convert_: all
+  _target_: sb3.RatioStatsPPO
+  policy: MlpPolicy
+  policy_kwargs:
+    ortho_init: true
+    activation_fn:
+      _target_: hydra.utils.get_class
+      path: torch.nn.ReLU
+    net_arch:
+      pi:
+      - 256
+      - 256
+      vf:
+      - 256
+      - 256
+    log_std_init: 0.0
+  batch_size: 256
+  gae_lambda: 0.98
+  n_steps: 1024
+  gamma: 0.9999
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: 0.0006
+  clip_range: 0.1
+  max_grad_norm: 0.5
+  vf_coef: 0.5
+  normalize_advantage: true
+  device: cpu
+  seed: 2
+env:
+  _target_: sb3.env_factory.create_mujoco_env
+  env_id: Swimmer-v4
+  n_envs: 4
+  render_mode: rgb_array
+  seed: ${training.seed}
+wandb:
+  project: BPO-calib-mujoco
+  entity: null
+  monitor_gym: true
+  save_code: true
+  name: Swimmer-v4-ppo-s2
+  group: Swimmer-v4-ppo
+training:
+  total_timesteps: 2000000
+  gradient_save_freq: 100000
+  n_envs: 8
+  seed: 2
+
+[2026-10-21 18:30:09,526][OpenGL.platform.ctypesloader][INFO] - Failed to load library ( 'libOpenGL.so.0' ): /lib64/libOpenGL.so.0: undefined symbol: _glapi_tls_Current
+[2026-10-21 18:30:09,530][OpenGL.acceleratesupport][INFO] - No OpenGL_accelerate module loaded: No module named 'OpenGL_accelerate'
+[2026-10-21 18:30:09,727][OpenGL.platform.ctypesloader][INFO] - Failed to load library ( 'libOpenGL.so.0' ): /lib64/libOpenGL.so.0: undefined symbol: _glapi_tls_Current
+Saving video to /home2/hua48722/bpo_repro_calib/sb3/videos/th38rdf2/rl-video-step-124700-to-step-125000.mp4
+MoviePy - Building video /home2/hua48722/bpo_repro_calib/sb3/videos/th38rdf2/rl-video-step-124700-to-step-125000.mp4.
+MoviePy - Writing video /home2/hua48722/bpo_repro_calib/sb3/videos/th38rdf2/rl-video-step-124700-to-step-125000.mp4
+
+
+frame_index:   0%|          | 0/300 [00:00<?, ?it/s, now=None]
+frame_index:   8%|▊         | 23/300 [00:00<00:01, 223.77it/s, now=None]
+frame_index:  17%|█▋        | 50/300 [00:00<00:01, 249.01it/s, now=None]
+frame_index:  25%|██▌       | 75/300 [00:00<00:00, 249.00it/s, now=None]
+frame_index:  33%|███▎      | 100/300 [00:00<00:00, 246.62it/s, now=None]
+frame_index:  42%|████▏     | 126/300 [00:00<00:00, 250.71it/s, now=None]
+frame_index:  51%|█████     | 152/300 [00:00<00:00, 247.67it/s, now=None]
+frame_index:  59%|█████▉    | 178/300 [00:00<00:00, 251.07it/s, now=None]
+frame_index:  69%|██████▊   | 206/300 [00:00<00:00, 259.95it/s, now=None]
+frame_index:  81%|████████▏ | 244/300 [00:00<00:00, 295.01it/s, now=None]
+frame_index:  95%|█████████▌| 285/300 [00:01<00:00, 327.98it/s, now=None]
+                                                                         
+MoviePy - Done !
+MoviePy - video ready /home2/hua48722/bpo_repro_calib/sb3/videos/th38rdf2/rl-video-step-124700-to-step-125000.mp4
+Saving video to /home2/hua48722/bpo_repro_calib/sb3/videos/th38rdf2/rl-video-step-249700-to-step-250000.mp4
+MoviePy - Building video /home2/hua48722/bpo_repro_calib/sb3/videos/th38rdf2/rl-video-step-249700-to-step-250000.mp4.
+MoviePy - Writing video /home2/hua48722/bpo_repro_calib/sb3/videos/th38rdf2/rl-video-step-249700-to-step-250000.mp4
+
+
+frame_index:   0%|          | 0/300 [00:00<?, ?it/s, now=None]
+frame_index:  10%|▉         | 29/300 [00:00<00:00, 285.27it/s, now=None]
+frame_index:  20%|██        | 61/300 [00:00<00:00, 302.92it/s, now=None]
+frame_index:  31%|███       | 92/300 [00:00<00:00, 244.34it/s, now=None]
+frame_index:  43%|████▎     | 129/300 [00:00<00:00, 285.72it/s, now=None]
+frame_index:  56%|█████▌    | 167/300 [00:00<00:00, 315.17it/s, now=None]
+frame_index:  68%|██████▊   | 205/300 [00:00<00:00, 334.71it/s, now=None]
+frame_index:  81%|████████▏ | 244/300 [00:00<00:00, 350.26it/s, now=None]
+frame_index:  93%|█████████▎| 280/300 [00:00<00:00, 339.83it/s, now=None]
+                                                                         
+MoviePy - Done !
+MoviePy - video ready /home2/hua48722/bpo_repro_calib/sb3/videos/th38rdf2/rl-video-step-249700-to-step-250000.mp4
+Saving video to /home2/hua48722/bpo_repro_calib/sb3/videos/th38rdf2/rl-video-step-374700-to-step-375000.mp4
+MoviePy - Building video /home2/hua48722/bpo_repro_calib/sb3/videos/th38rdf2/rl-video-step-374700-to-step-375000.mp4.
+MoviePy - Writing video /home2/hua48722/bpo_repro_calib/sb3/videos/th38rdf2/rl-video-step-374700-to-step-375000.mp4
+
+
+frame_index:   0%|          | 0/300 [00:00<?, ?it/s, now=None]
+frame_index:   9%|▉         | 27/300 [00:00<00:01, 269.54it/s, now=None]
+frame_index:  19%|█▉        | 57/300 [00:00<00:00, 285.87it/s, now=None]
+frame_index:  29%|██▊       | 86/300 [00:00<00:00, 275.13it/s, now=None]
+frame_index:  41%|████      | 123/300 [00:00<00:00, 311.36it/s, now=None]
+frame_index:  52%|█████▏    | 155/300 [00:00<00:00, 298.75it/s, now=None]
+frame_index:  63%|██████▎   | 189/300 [00:00<00:00, 309.93it/s, now=None]
+frame_index:  74%|███████▍  | 222/300 [00:00<00:00, 315.32it/s, now=None]
+frame_index:  85%|████████▍ | 254/300 [00:00<00:00, 316.03it/s, now=None]
+frame_index:  96%|█████████▌| 288/300 [00:00<00:00, 323.08it/s, now=None]
+                                                                         

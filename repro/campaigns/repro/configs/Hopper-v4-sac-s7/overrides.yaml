@@ -1,0 +1,10 @@
+- algo=sac
+- env.env_id=Hopper-v4
+- training.seed=7
+- algo.learning_starts=10000
+- env=mujoco
+- ++algo.device=cpu
+- training.max_hours=48.0
+- wandb.project=BPO-repro-mujoco
+- ++wandb.name=Hopper-v4-sac-s7
+- ++wandb.group=Hopper-v4-sac

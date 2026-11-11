@@ -1,0 +1,2 @@
+- agent.save_interval=500
+- agent.seed=5

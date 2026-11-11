@@ -1,0 +1,38 @@
+algo:
+  _convert_: all
+  _target_: sb3.RatioStatsPPO
+  policy: CnnPolicy
+  policy_kwargs:
+    share_features_extractor: true
+  batch_size: 256
+  gae_lambda: 0.95
+  gamma: 0.98
+  n_epochs: 4
+  n_steps: 128
+  ent_coef: 0.01
+  learning_rate: 0.00025
+  clip_range: 0.2
+  max_grad_norm: 0.5
+  vf_coef: 0.5
+  normalize_advantage: true
+  device: cpu
+  seed: 4
+env:
+  _target_: sb3.env_factory.create_atari_env
+  env_id: BoxingNoFrameskip-v4
+  n_envs: 8
+  n_stack: 4
+  seed: ${training.seed}
+wandb:
+  project: BPO-repro-atari
+  entity: null
+  monitor_gym: true
+  save_code: true
+  name: BoxingNoFrameskip-v4-ppo-s4
+  group: BoxingNoFrameskip-v4-ppo
+training:
+  total_timesteps: 20000000
+  gradient_save_freq: 100000
+  n_envs: 8
+  seed: 4
+  max_hours: null

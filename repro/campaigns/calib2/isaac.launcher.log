@@ -1,0 +1,5 @@
+3 jobs to run (0 already done/failed)
+[10-21 18:48] start  g1_rough-bpo-s1 (gpu 0)
+[10-21 18:48] start  g1_rough-bpo-s2 (gpu 0)
+[10-21 18:48] start  g1_rough-bpo-s3 (gpu 0)
+stopped; interrupted jobs will rerun on the next start

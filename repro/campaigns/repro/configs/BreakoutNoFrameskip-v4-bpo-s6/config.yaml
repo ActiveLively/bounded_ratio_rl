@@ -1,0 +1,50 @@
+algo:
+  _convert_: all
+  _target_: sb3.BPO
+  policy: BPOCnnPolicy
+  policy_kwargs:
+    ortho_init: true
+    activation_fn:
+      _target_: hydra.utils.get_class
+      path: torch.nn.ReLU
+    net_arch:
+      pi:
+      - 256
+      vf:
+      - 256
+    share_features_extractor: true
+  learning_rate: 0.00025
+  batch_size: 256
+  n_steps: 128
+  n_epochs: 5
+  gamma: 0.98
+  gae_lambda: 0.95
+  lambda_: 0.001
+  ent_coef: 0.001
+  vf_coef: 0.5
+  u_coef: 0.5
+  clip_ratio: 0.3
+  verbose: 1
+  max_grad_norm: 1.0
+  use_median: true
+  device: cpu
+  seed: 6
+env:
+  _target_: sb3.env_factory.create_atari_env
+  env_id: BreakoutNoFrameskip-v4
+  n_envs: 8
+  n_stack: 4
+  seed: ${training.seed}
+wandb:
+  project: BPO-repro-atari
+  entity: null
+  monitor_gym: true
+  save_code: true
+  name: BreakoutNoFrameskip-v4-bpo-s6
+  group: BreakoutNoFrameskip-v4-bpo
+training:
+  total_timesteps: 20000000
+  gradient_save_freq: 100000
+  n_envs: 8
+  seed: 6
+  max_hours: null

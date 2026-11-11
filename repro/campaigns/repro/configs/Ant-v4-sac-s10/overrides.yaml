@@ -1,0 +1,10 @@
+- algo=sac
+- env.env_id=Ant-v4
+- training.seed=10
+- algo.learning_starts=10000
+- env=mujoco
+- ++algo.device=cpu
+- training.max_hours=48.0
+- wandb.project=BPO-repro-mujoco
+- ++wandb.name=Ant-v4-sac-s10
+- ++wandb.group=Ant-v4-sac

@@ -1,0 +1,46 @@
+seed: 2
+device: cuda:0
+num_steps_per_env: 24
+max_iterations: 3000
+empirical_normalization: false
+policy:
+  class_name: BPOActorCritic
+  init_noise_std: 1.0
+  actor_hidden_dims:
+  - 512
+  - 256
+  - 128
+  critic_hidden_dims:
+  - 512
+  - 256
+  - 128
+  activation: elu
+algorithm:
+  class_name: BPO
+  value_loss_coef: 1.0
+  use_clipped_value_loss: true
+  clip_param: 0.2
+  entropy_coef: 0.0
+  num_learning_epochs: 10
+  num_mini_batches: 4
+  learning_rate: 0.001
+  schedule: adaptive
+  gamma: 0.99
+  lam: 0.95
+  desired_kl: 0.01
+  max_grad_norm: 1.0
+  reg_w: 0.001
+  use_median: false
+  online_adv: true
+  loss_type: adv_TV
+  tv_loss_coef: 0.0
+clip_actions: null
+save_interval: 500
+experiment_name: g1_rough
+run_name: g1_rough-bpo_value-s2
+logger: wandb
+neptune_project: BPO-repro-isaaclab
+wandb_project: BPO-repro-isaaclab
+resume: false
+load_run: .*
+load_checkpoint: model_.*.pt

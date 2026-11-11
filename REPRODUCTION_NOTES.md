@@ -87,3 +87,9 @@ LLM / TTRL dependencies are not installed.
 
 - If Hopper BPO with λ = 10 doesn't reproduce Table 1, compare it against H1b first.
 - Not used in this round: `sweeps/mujoco/Humanoid-V4/bpo_seed_value.yaml` (λ = 0.01) and the HalfCheetah sweeps. HalfCheetah isn't in the paper.
+
+## 7. Results
+
+All 340 runs finished on 2026-10-27 with no failures. Tables, figures, launcher logs, job state,
+condensed job logs and run configs are in [`repro/`](repro/README.md), produced from the raw
+outputs (about 55 GB) by `scripts/condense_repro.py`.

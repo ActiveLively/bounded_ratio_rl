@@ -1,0 +1,3 @@
+- agent.save_interval=500
+- agent.seed=1
+- agent.algorithm.reg_w=0.01

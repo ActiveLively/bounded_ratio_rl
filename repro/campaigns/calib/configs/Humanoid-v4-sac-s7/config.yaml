@@ -1,0 +1,34 @@
+algo:
+  _convert_: all
+  _target_: stable_baselines3.SAC
+  policy: MlpPolicy
+  seed: ${training.seed}
+  learning_rate: 0.0003
+  buffer_size: 1000000
+  learning_starts: 10000
+  batch_size: 256
+  tau: 0.005
+  gamma: 0.99
+  train_freq: 1
+  gradient_steps: 1
+  n_steps: 1
+  target_update_interval: 1
+  device: cpu
+env:
+  _target_: sb3.env_factory.create_mujoco_env
+  env_id: Humanoid-v4
+  n_envs: 1
+  render_mode: rgb_array
+  seed: ${training.seed}
+wandb:
+  project: BPO-calib-mujoco
+  entity: null
+  monitor_gym: true
+  save_code: true
+  name: Humanoid-v4-sac-s7
+  group: Humanoid-v4-sac
+training:
+  total_timesteps: 2000000
+  gradient_save_freq: 100000
+  n_envs: 8
+  seed: 7

@@ -13,6 +13,7 @@ With --paper, each figure also gets a "paper vs ours" image with the paper's fig
 import argparse
 import csv
 import glob
+import json
 import os
 import pickle
 import re
@@ -83,6 +84,13 @@ def load_all(out_dir, cache):
     if os.path.exists(cache):
         with open(cache, "rb") as f:
             return pickle.load(f)
+    npz = os.path.splitext(cache)[0] + ".npz"  # downsampled curves from scripts/condense_repro.py
+    if os.path.exists(npz):
+        z = np.load(npz)
+        data = {}
+        for name, env, algo, seed, tag in json.loads(str(z["index"])):
+            data.setdefault((env, algo, seed), {})[tag] = (z[name + "_x"], z[name + "_y"].astype(float))
+        return data
     jobs = []
     # SB3 runs: map wandb id -> (env, algo, seed) via results/per_run.csv
     with open(os.path.join(out_dir, "results", "per_run.csv"), newline="") as f:

@@ -1,0 +1,10 @@
+- algo=sac
+- env.env_id=Humanoid-v4
+- training.seed=2
+- algo.learning_starts=10000
+- env=mujoco
+- ++algo.device=cpu
+- training.total_timesteps=2000000
+- wandb.project=BPO-calib-mujoco
+- ++wandb.name=Humanoid-v4-sac-s2
+- ++wandb.group=Humanoid-v4-sac

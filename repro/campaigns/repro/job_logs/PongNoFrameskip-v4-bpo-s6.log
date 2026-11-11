@@ -1,0 +1,95 @@
+A.L.E: Arcade Learning Environment (version 0.12.1+8a8fafb)
+[Powered by Stella]
+algo:
+  _convert_: all
+  _target_: sb3.BPO
+  policy: BPOCnnPolicy
+  policy_kwargs:
+    ortho_init: true
+    activation_fn:
+      _target_: hydra.utils.get_class
+      path: torch.nn.ReLU
+    net_arch:
+      pi:
+      - 256
+      vf:
+      - 256
+    share_features_extractor: true
+  learning_rate: 0.00025
+  batch_size: 256
+  n_steps: 128
+  n_epochs: 5
+  gamma: 0.98
+  gae_lambda: 0.95
+  lambda_: 0.001
+  ent_coef: 0.001
+  vf_coef: 0.5
+  u_coef: 0.5
+  clip_ratio: 0.3
+  verbose: 1
+  max_grad_norm: 1.0
+  use_median: true
+  device: cpu
+  seed: 6
+env:
+  _target_: sb3.env_factory.create_atari_env
+  env_id: PongNoFrameskip-v4
+  n_envs: 8
+  n_stack: 4
+  seed: ${training.seed}
+wandb:
+  project: BPO-repro-atari
+  entity: null
+  monitor_gym: true
+  save_code: true
+  name: PongNoFrameskip-v4-bpo-s6
+  group: PongNoFrameskip-v4-bpo
+training:
+  total_timesteps: 20000000
+  gradient_save_freq: 100000
+  n_envs: 8
+  seed: 6
+  max_hours: null
+
+Using cpu device
+Wrapping the env in a VecTransposeImage.
+NatureCNN(
+  (cnn): Sequential(
+    (0): Conv2d(4, 32, kernel_size=(8, 8), stride=(4, 4))
+    (1): ReLU()
+    (2): Conv2d(32, 64, kernel_size=(4, 4), stride=(2, 2))
+    (3): ReLU()
+    (4): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1))
+    (5): ReLU()
+    (6): Flatten(start_dim=1, end_dim=-1)
+  )
+  (linear): Sequential(
+    (0): Linear(in_features=3136, out_features=512, bias=True)
+    (1): ReLU()
+  )
+)
+Logging to runs/nabky691/BPO_1
+... [449239 lines elided] ...
+-------------------------------------------
+| rollout/                |               |
+|    ep_len_mean          | 8.71e+03      |
+|    ep_rew_mean          | 20.8          |
+| time/                   |               |
+|    fps                  | 88            |
+|    iterations           | 19532         |
+|    time_elapsed         | 226877        |
+|    total_timesteps      | 20000768      |
+| train/                  |               |
+|    approx_kl            | 0.00012138515 |
+|    clip_ratio           | 0.3           |
+|    entropy_loss         | -1.68         |
+|    lambda               | 0.001         |
+|    learning_rate        | 0.00025       |
+|    loss                 | 0.346         |
+|    n_updates            | 97655         |
+|    policy_gradient_loss | 0.000907      |
+|    ratio_high           | 1.01          |
+|    ratio_low            | 0.989         |
+|    u_loss               | 0.693         |
+|    value_loss           | 3.35e-05      |
+-------------------------------------------

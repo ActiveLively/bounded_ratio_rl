@@ -1,0 +1,97 @@
+A.L.E: Arcade Learning Environment (version 0.12.1+8a8fafb)
+[Powered by Stella]
+algo:
+  _convert_: all
+  _target_: sb3.RatioStatsPPO
+  policy: CnnPolicy
+  policy_kwargs:
+    share_features_extractor: true
+  batch_size: 256
+  gae_lambda: 0.95
+  gamma: 0.98
+  n_epochs: 4
+  n_steps: 128
+  ent_coef: 0.01
+  learning_rate: 0.00025
+  clip_range: 0.2
+  max_grad_norm: 0.5
+  vf_coef: 0.5
+  normalize_advantage: true
+  device: cpu
+  seed: 3
+env:
+  _target_: sb3.env_factory.create_atari_env
+  env_id: BreakoutNoFrameskip-v4
+  n_envs: 8
+  n_stack: 4
+  seed: ${training.seed}
+wandb:
+  project: BPO-repro-atari
+  entity: null
+  monitor_gym: true
+  save_code: true
+  name: BreakoutNoFrameskip-v4-ppo-s3
+  group: BreakoutNoFrameskip-v4-ppo
+training:
+  total_timesteps: 20000000
+  gradient_save_freq: 100000
+  n_envs: 8
+  seed: 3
+  max_hours: null
+
+Saving video to /home2/hua48722/bpo_repro/sb3/videos/0dix0it4/rl-video-step-624700-to-step-625000.mp4
+MoviePy - Building video /home2/hua48722/bpo_repro/sb3/videos/0dix0it4/rl-video-step-624700-to-step-625000.mp4.
+MoviePy - Writing video /home2/hua48722/bpo_repro/sb3/videos/0dix0it4/rl-video-step-624700-to-step-625000.mp4
+
+
+frame_index:   0%|          | 0/300 [00:00<?, ?it/s, now=None]
+frame_index:  16%|█▌        | 47/300 [00:00<00:00, 467.53it/s, now=None]
+frame_index:  31%|███▏      | 94/300 [00:00<00:00, 362.09it/s, now=None]
+frame_index:  49%|████▊     | 146/300 [00:00<00:00, 422.52it/s, now=None]
+frame_index:  66%|██████▋   | 199/300 [00:00<00:00, 459.43it/s, now=None]
+frame_index:  85%|████████▍ | 254/300 [00:00<00:00, 487.44it/s, now=None]
+                                                                         
+MoviePy - Done !
+MoviePy - video ready /home2/hua48722/bpo_repro/sb3/videos/0dix0it4/rl-video-step-624700-to-step-625000.mp4
+Saving video to /home2/hua48722/bpo_repro/sb3/videos/0dix0it4/rl-video-step-1249700-to-step-1250000.mp4
+MoviePy - Building video /home2/hua48722/bpo_repro/sb3/videos/0dix0it4/rl-video-step-1249700-to-step-1250000.mp4.
+MoviePy - Writing video /home2/hua48722/bpo_repro/sb3/videos/0dix0it4/rl-video-step-1249700-to-step-1250000.mp4
+
+
+frame_index:   0%|          | 0/300 [00:00<?, ?it/s, now=None]
+frame_index:  14%|█▍        | 42/300 [00:00<00:00, 413.91it/s, now=None]
+frame_index:  28%|██▊       | 84/300 [00:00<00:00, 416.79it/s, now=None]
+frame_index:  46%|████▌     | 137/300 [00:00<00:00, 466.63it/s, now=None]
+frame_index:  61%|██████▏   | 184/300 [00:00<00:00, 467.42it/s, now=None]
+frame_index:  79%|███████▉  | 237/300 [00:00<00:00, 489.05it/s, now=None]
+frame_index:  97%|█████████▋| 290/300 [00:00<00:00, 500.73it/s, now=None]
+                                                                         
+MoviePy - Done !
+MoviePy - video ready /home2/hua48722/bpo_repro/sb3/videos/0dix0it4/rl-video-step-1249700-to-step-1250000.mp4
+Saving video to /home2/hua48722/bpo_repro/sb3/videos/0dix0it4/rl-video-step-1874700-to-step-1875000.mp4
+MoviePy - Building video /home2/hua48722/bpo_repro/sb3/videos/0dix0it4/rl-video-step-1874700-to-step-1875000.mp4.
+MoviePy - Writing video /home2/hua48722/bpo_repro/sb3/videos/0dix0it4/rl-video-step-1874700-to-step-1875000.mp4
+
+
+frame_index:   0%|          | 0/300 [00:00<?, ?it/s, now=None]
+frame_index:  15%|█▍        | 44/300 [00:00<00:00, 437.47it/s, now=None]
+frame_index:  30%|███       | 90/300 [00:00<00:00, 450.37it/s, now=None]
+frame_index:  48%|████▊     | 145/300 [00:00<00:00, 492.33it/s, now=None]
+frame_index:  65%|██████▌   | 195/300 [00:00<00:00, 491.54it/s, now=None]
+frame_index:  83%|████████▎ | 248/300 [00:00<00:00, 503.09it/s, now=None]
+                                                                         
+MoviePy - Done !
+MoviePy - video ready /home2/hua48722/bpo_repro/sb3/videos/0dix0it4/rl-video-step-1874700-to-step-1875000.mp4
+Saving video to /home2/hua48722/bpo_repro/sb3/videos/0dix0it4/rl-video-step-2499700-to-step-2500000.mp4
+MoviePy - Building video /home2/hua48722/bpo_repro/sb3/videos/0dix0it4/rl-video-step-2499700-to-step-2500000.mp4.
+MoviePy - Writing video /home2/hua48722/bpo_repro/sb3/videos/0dix0it4/rl-video-step-2499700-to-step-2500000.mp4
+
+
+frame_index:   0%|          | 0/300 [00:00<?, ?it/s, now=None]
+frame_index:  20%|██        | 60/300 [00:00<00:00, 599.72it/s, now=None]
+frame_index:  42%|████▏     | 126/300 [00:00<00:00, 633.67it/s, now=None]
+frame_index:  63%|██████▎   | 190/300 [00:00<00:00, 628.12it/s, now=None]
+frame_index:  85%|████████▍ | 254/300 [00:00<00:00, 630.99it/s, now=None]
+                                                                         
+MoviePy - Done !
+MoviePy - video ready /home2/hua48722/bpo_repro/sb3/videos/0dix0it4/rl-video-step-2499700-to-step-2500000.mp4

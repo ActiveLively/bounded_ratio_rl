@@ -1,0 +1,87 @@
+/home2/hua48722/GitHub/bounded_ratio_rl/.venv/lib/python3.10/site-packages/gymnasium/envs/registration.py:512: DeprecationWarning: [33mWARN: The environment Ant-v4 is out of date. You should consider upgrading to version `v5`.[0m
+  logger.deprecation(
+algo:
+  _convert_: all
+  _target_: sb3.BPO
+  policy: BPOPolicy
+  policy_kwargs:
+    ortho_init: true
+    activation_fn:
+      _target_: hydra.utils.get_class
+      path: torch.nn.ReLU
+    net_arch:
+      pi:
+      - 256
+      - 256
+      vf:
+      - 256
+      - 256
+    log_std_init: 0.0
+  learning_rate: 0.0001
+  batch_size: 256
+  n_steps: 2048
+  n_epochs: 10
+  gamma: 0.99
+  gae_lambda: 0.95
+  lambda_: 0.001
+  ent_coef: 0.0
+  vf_coef: 0.5
+  u_coef: 0.5
+  clip_ratio: 0.3
+  verbose: 1
+  max_grad_norm: 1.0
+  use_median: true
+  device: cpu
+  seed: 2
+env:
+  _target_: sb3.env_factory.create_mujoco_env
+  env_id: Ant-v4
+  n_envs: 1
+  render_mode: rgb_array
+  seed: ${training.seed}
+wandb:
+  project: BPO-repro-mujoco
+  entity: null
+  monitor_gym: true
+  save_code: true
+  name: Ant-v4-bpo-s2
+  group: Ant-v4-bpo
+training:
+  total_timesteps: 40000000
+  gradient_save_freq: 100000
+  n_envs: 8
+  seed: 2
+  max_hours: null
+  resume: null
+
+[2026-10-25 02:27:30,054][OpenGL.acceleratesupport][INFO] - No OpenGL_accelerate module loaded: No module named 'OpenGL_accelerate'
+Using cpu device
+FlattenExtractor(
+  (flatten): Flatten(start_dim=1, end_dim=-1)
+)
+Logging to runs/3608gwea/BPO_1
+... [468730 lines elided] ...
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 905         |
+|    ep_rew_mean          | 5.55e+03    |
+| time/                   |             |
+|    fps                  | 800         |
+|    iterations           | 19532       |
+|    time_elapsed         | 49992       |
+|    total_timesteps      | 40001536    |
+| train/                  |             |
+|    approx_kl            | 0.028697632 |
+|    clip_ratio           | 0.3         |
+|    entropy_loss         | 16.8        |
+|    lambda               | 0.001       |
+|    learning_rate        | 0.0001      |
+|    loss                 | 321         |
+|    n_updates            | 195310      |
+|    policy_gradient_loss | 3.41        |
+|    ratio_high           | 1.21        |
+|    ratio_low            | 0.81        |
+|    std                  | 0.0305      |
+|    u_loss               | 6.94        |
+|    value_loss           | 833         |
+-----------------------------------------
