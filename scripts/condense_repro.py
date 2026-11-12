@@ -22,6 +22,9 @@ What is kept:
 What is dropped (all of it is on wandb, see repro/README.md): TensorBoard event files, wandb run dirs,
 videos, checkpoints, and the bulk of the per-step console output.
 
+The inputs were deleted on 2026-11-12, so this script only documents how repro/ was made. Point
+HOME and REPO at a new set of runs to condense those.
+
     python scripts/condense_repro.py [--dest repro] [--points 500]
 """
 import argparse

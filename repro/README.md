@@ -6,7 +6,9 @@ speed-calibration passes. All 340 runs finished; none failed. What we changed re
 to the repo as released, and why, is in [`../REPRODUCTION_NOTES.md`](../REPRODUCTION_NOTES.md).
 
 The raw outputs (about 55 GB) were cut down to this folder (about 18 MB) by
-[`scripts/condense_repro.py`](../scripts/condense_repro.py). Full curves, system metrics and
+[`scripts/condense_repro.py`](../scripts/condense_repro.py). The raw outputs were deleted from the
+lab server on 2026-11-12, after checking that every run had finished uploading to wandb, so this
+folder and wandb are now the only copies. Full curves, system metrics and
 model files are on wandb in projects `BPO-repro-mujoco`, `BPO-repro-atari` and `BPO-repro-isaaclab`.
 `results/per_run.csv` has each run's wandb URL.
 
@@ -27,7 +29,8 @@ every traceback, and the last lines of the log. Lines left out are marked `... [
 
 ## Redrawing the figures
 
-`plot_repro.py` reads `results/curves.npz` when the full `curves.pkl` cache is not there:
+`plot_repro.py` reads `results/curves.npz` when the full `curves.pkl` cache is not there
+(the cache and the TensorBoard files it was built from were deleted with the raw outputs):
 
 ```bash
 python scripts/plot_repro.py --out repro

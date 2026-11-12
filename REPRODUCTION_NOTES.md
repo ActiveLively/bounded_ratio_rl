@@ -63,7 +63,7 @@ All runs are built from the repo's sweep files by `scripts/repro_launcher.py`, a
 | L4 | BPO and PPO configs don't seed the networks (`seed` is only passed to the env factory); SAC and DQN configs do. | Launcher adds `++algo.seed=<seed>` for BPO/PPO so runs are reproducible. Results across seeds are statistically unaffected. |
 | L5 | IsaacLab saves an 11.7 MB checkpoint every 50 iterations and uploads each to wandb: about 57 GB over the planned runs. | `agent.save_interval=500`. The final model is always saved. Training is unaffected. |
 | L6 | IsaacLab runs log through RSL-RL's wandb writer (project `BPO-repro-isaaclab`); SB3 runs log through `train.py` (`BPO-repro-mujoco`, `BPO-repro-atari`), with wandb `group` = env-algorithm. | n/a |
-| L7 | wandb shows runs as **crashed** that aren't. (a) IsaacLab: the process exits without `wandb.finish()` (Isaac Sim shutdown), so finished runs never send an exit status; the launcher records rc 0 and the data is complete. (b) Atari: 118 runs in one project hit wandb's per-project filestream rate limit (HTTP 429) from the start; wandb keeps retrying, and a run lagging too far is shown as crashed until its upload catches up. Everything is also in the local `.wandb` files under `<out>/sb3/wandb/`, which `wandb sync` can upload. | Check the launcher state file, not wandb's run state. |
+| L7 | wandb shows runs as **crashed** that aren't. (a) IsaacLab: the process exits without `wandb.finish()` (Isaac Sim shutdown), so finished runs never send an exit status; the launcher records rc 0 and the data is complete. (b) Atari: 118 runs in one project hit wandb's per-project filestream rate limit (HTTP 429) from the start; wandb keeps retrying, and a run lagging too far is shown as crashed until its upload catches up. All runs had finished uploading by 2026-11-12 (`wandb sync --show` listed none pending), and the local `.wandb` files were then deleted. | Check the launcher state file, not wandb's run state. |
 | L8 | Restarting the launcher. SIGINT/SIGTERM stop all its jobs. To restart without that, SIGKILL the launcher process: jobs run in their own sessions and keep running, and the next launcher adopts every job marked running whose process is still alive (matched by its command line). An adopted job's exit code is unknown, so it counts as failed if its log has a traceback. | n/a |
 
 ## 5. Software environment
@@ -92,4 +92,5 @@ LLM / TTRL dependencies are not installed.
 
 All 340 runs finished on 2026-10-27 with no failures. Tables, figures, launcher logs, job state,
 condensed job logs and run configs are in [`repro/`](repro/README.md), produced from the raw
-outputs (about 55 GB) by `scripts/condense_repro.py`.
+outputs (about 55 GB) by `scripts/condense_repro.py`. The raw outputs were deleted on 2026-11-12;
+the full data is on wandb.
