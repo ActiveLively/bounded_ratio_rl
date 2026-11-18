@@ -27,6 +27,7 @@ class BPOActorCritic(nn.Module):
         activation="elu",
         init_noise_std=1.0,
         noise_std_type: str = "scalar",
+        min_std: float = 0.0,
         **kwargs,
     ):
         if kwargs:
@@ -81,6 +82,7 @@ class BPOActorCritic(nn.Module):
 
         # Action noise
         self.noise_std_type = noise_std_type
+        self.min_std = min_std  # floor on the action std; 0 disables it
         if self.noise_std_type == "scalar":
             self.std = nn.Parameter(init_noise_std * torch.ones(num_actions))
         elif self.noise_std_type == "log":
@@ -129,6 +131,8 @@ class BPOActorCritic(nn.Module):
             std = torch.exp(self.log_std).expand_as(mean)
         else:
             raise ValueError(f"Unknown standard deviation type: {self.noise_std_type}. Should be 'scalar' or 'log'")
+        if self.min_std > 0:
+            std = std.clamp(min=self.min_std)
         # create distribution
         self.distribution = Normal(mean, std)
 

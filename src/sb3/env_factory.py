@@ -4,7 +4,7 @@ These can be instantiated via Hydra's instantiate mechanism.
 """
 import gymnasium as gym
 from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack
+from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack, VecNormalize
 from stable_baselines3.common.env_util import make_atari_env
 from typing import Optional
 
@@ -41,10 +41,16 @@ def create_mujoco_env(
     n_envs: int = 1,
     render_mode: str = "rgb_array",
     seed: Optional[int] = None,
+    normalize: bool = False,
+    norm_gamma: float = 0.99,
     **kwargs
 ):
     """
     Factory function to create a vectorized MuJoCo/standard Gymnasium environment.
+
+    With normalize=True the env is wrapped in VecNormalize (running observation and reward
+    normalisation; norm_gamma should equal the algorithm's discount). Monitor sits inside the
+    wrapper, so logged episode returns stay in raw reward units.
 
     Args:
         env_id: The environment ID (e.g., "HalfCheetah-v5")
@@ -65,5 +71,7 @@ def create_mujoco_env(
     env = DummyVecEnv(envs)
     if seed is not None:
         env.seed(seed)
+    if normalize:
+        env = VecNormalize(env, norm_obs=True, norm_reward=True, gamma=norm_gamma)
     return env
 

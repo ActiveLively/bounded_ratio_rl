@@ -101,6 +101,13 @@ class BPO(OnPolicyAlgorithm):
         use_median: bool = True,
         clip_ratio: Union[float, Schedule] = 0.3,
         max_grad_norm: float = 1.0,
+        adaptive_clip: bool = False,
+        target_kl: float = 0.01,
+        clip_min: float = 0.05,
+        clip_max: Optional[float] = None,
+        clip_adapt_rate: float = 1.2,
+        lambda_mode: str = "fixed",
+        normalize_weight: bool = False,
         use_sde: bool = False,
         sde_sample_freq: int = -1,
         rollout_buffer_class: Optional[type[RolloutBuffer]] = None,
@@ -173,6 +180,18 @@ class BPO(OnPolicyAlgorithm):
             # Callable
             self.clip_ratio_schedule = clip_ratio
         self.u_coef = u_coef
+        # Adaptive BPO (all off by default, so the released algorithm is unchanged)
+        # adaptive_clip: after each update, shrink/grow the ratio bound to hold target_kl
+        self.adaptive_clip = adaptive_clip
+        self.target_kl = target_kl
+        self.clip_adapt_rate = clip_adapt_rate
+        self.clip_ratio_cur = self.clip_ratio_schedule(1.0)
+        self.clip_min = min(clip_min, self.clip_ratio_cur)
+        self.clip_max = self.clip_ratio_cur if clip_max is None else clip_max
+        # lambda_mode "adaptive": lambda = lambda_ * mean|Q - baseline| over the rollout
+        self.lambda_mode = lambda_mode
+        # normalize_weight: divide the |Q - V| loss weight by its batch mean
+        self.normalize_weight = normalize_weight
 
         if _init_setup_model:
             self._setup_model()
@@ -197,6 +216,20 @@ class BPO(OnPolicyAlgorithm):
             # Fallback if total_timesteps not available yet
             progress_remaining = 1.0
         clip_ratio = self.clip_ratio_schedule(progress_remaining)
+        if self.adaptive_clip:
+            clip_ratio = self.clip_ratio_cur
+
+        # Scale of Q - baseline over the whole rollout (logged; sets lambda in adaptive mode)
+        with th.no_grad():
+            rng_state = np.random.get_state()  # get() shuffles; keep the mini-batch order unchanged
+            full = next(self.rollout_buffer.get(batch_size=None))
+            np.random.set_state(rng_state)
+            if self.use_median:
+                baseline = self.policy.predict_u_values(full.observations)
+            else:
+                baseline = self.policy.predict_values(full.observations)
+            adv_scale = th.mean(th.abs(full.returns.flatten() - baseline.flatten())).item()
+        lambda_ = self.lambda_ * (adv_scale + 1e-8) if self.lambda_mode == "adaptive" else self.lambda_
 
         entropy_losses = []
         pg_losses, value_losses, u_losses = [], [], []
@@ -230,14 +263,14 @@ class BPO(OnPolicyAlgorithm):
 
                 # u loss
                 if self.use_median:
-                    adv = (q_values - u_values) / self.lambda_
+                    adv = (q_values - u_values) / lambda_
                     u_loss = th.mean(
-                        th.nn.functional.softplus(adv * self.lambda_)
-                        - 0.5 * adv * self.lambda_
+                        th.nn.functional.softplus(adv * lambda_)
+                        - 0.5 * adv * lambda_
                     )
                     u_losses.append(u_loss.item())
                 else:
-                    adv = (q_values - values) / self.lambda_
+                    adv = (q_values - values) / lambda_
                     u_loss = th.zeros_like(value_loss)
                     u_losses.append(0.0)
 
@@ -252,8 +285,11 @@ class BPO(OnPolicyAlgorithm):
                 target_log_ratio = th.log(target_ratio)
                 log_ratio = log_prob.flatten() - rollout_data.old_log_prob.flatten()
                 ratio = th.exp(log_ratio)
+                weight = q_values - values.detach()
+                if self.normalize_weight:
+                    weight = weight / (weight.abs().mean() + 1e-8)
                 policy_loss = th.mean(
-                    th.abs((ratio - target_ratio).flatten() * (q_values - values.detach()))
+                    th.abs((ratio - target_ratio).flatten() * weight)
                 )
                 pg_losses.append(policy_loss.item())
 
@@ -295,7 +331,15 @@ class BPO(OnPolicyAlgorithm):
         self.logger.record("train/u_loss", np.mean(u_losses))
         self.logger.record("train/approx_kl", np.mean(approx_kl_divs))
         self.logger.record("train/loss", loss.item())
-        self.logger.record("train/lambda", self.lambda_)
+        self.logger.record("train/lambda", lambda_)
+        self.logger.record("train/adv_scale", adv_scale)
+        if self.adaptive_clip:
+            # mean KL of the last epoch, i.e. how far the finished update moved the policy
+            kl = float(np.mean(approx_kl_divs))
+            if kl > 2.0 * self.target_kl:
+                self.clip_ratio_cur = max(self.clip_min, self.clip_ratio_cur / self.clip_adapt_rate)
+            elif kl < 0.5 * self.target_kl:
+                self.clip_ratio_cur = min(self.clip_max, self.clip_ratio_cur * self.clip_adapt_rate)
         self.logger.record("train/clip_ratio", clip_ratio)
         if hasattr(self.policy, "log_std"):
             self.logger.record("train/std", th.exp(self.policy.log_std).mean().item())

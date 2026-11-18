@@ -47,6 +47,13 @@ class BPO:
         use_median=True,  # otherwise use value
         online_adv=True,
         loss_type="adv_TV",
+        # Adaptive BPO (all off by default, so the released algorithm is unchanged)
+        clip_schedule="fixed",  # "adaptive": KL-controlled ratio bound epsilon
+        clip_min=0.05,
+        clip_max=None,  # None -> the initial clip_param
+        clip_adapt_rate=1.2,
+        reg_w_mode="fixed",  # "adaptive": lambda = reg_w * mean|Q - mu| of the batch
+        normalize_weight=False,  # divide the |Q - V| loss weight by its batch mean
         # RND parameters
         rnd_cfg: dict | None = None,
         # Symmetry parameters
@@ -137,6 +144,12 @@ class BPO:
         self.loss_type = loss_type
         self.online_adv = online_adv
         self.tv_loss_coef = tv_loss_coef
+        self.clip_schedule = clip_schedule
+        self.clip_min = min(clip_min, clip_param)
+        self.clip_max = clip_param if clip_max is None else clip_max
+        self.clip_adapt_rate = clip_adapt_rate
+        self.reg_w_mode = reg_w_mode
+        self.normalize_weight = normalize_weight
 
         self.mean_value_loss = 1.0
         self.mean_surrogate_loss = 1.0
@@ -234,6 +247,9 @@ class BPO:
         mean_surrogate_loss = 0
         mean_entropy = 0
         mean_median_loss = 0
+        mean_kl = 0
+        mean_adv_scale = 0
+        mean_reg_w = 0
 
         # -- RND loss
         if self.rnd:
@@ -386,18 +402,29 @@ class BPO:
 
             q_value_batch = returns_batch
 
+            # temperature lambda: fixed, or proportional to the batch scale of Q - baseline
+            baseline_batch = median_batch if self.use_median else value_batch
+            with torch.no_grad():
+                adv_scale = torch.mean(
+                    torch.abs(q_value_batch.flatten() - baseline_batch.flatten())
+                )
+            if self.reg_w_mode == "adaptive":
+                reg_w = self.reg_w * (adv_scale + 1e-8)
+            else:
+                reg_w = self.reg_w
+
             if self.use_median:
-                adv = (q_value_batch.flatten() - median_batch.flatten()) / self.reg_w
+                adv = (q_value_batch.flatten() - median_batch.flatten()) / reg_w
                 
                 # Value function loss
                 median_loss = torch.mean(
-                    torch.nn.functional.softplus(-torch.abs(adv * self.reg_w))
-                    + 0.5 * torch.abs(adv * self.reg_w)
+                    torch.nn.functional.softplus(-torch.abs(adv * reg_w))
+                    + 0.5 * torch.abs(adv * reg_w)
                 )
                 adv_d = adv.detach()
                 adv_d = torch.clamp(adv_d, -10.0, 10.0)
             else:
-                adv = (q_value_batch.flatten() - value_batch.flatten()) / self.reg_w
+                adv = (q_value_batch.flatten() - value_batch.flatten()) / reg_w
                 median_loss = torch.zeros_like(adv).mean()
                 adv_d = adv.detach()
                 adv_d = torch.clamp(adv_d, -10.0, 10.0)
@@ -423,11 +450,11 @@ class BPO:
 
             if self.loss_type == "adv_TV":
                 if self.online_adv:
+                    weight = q_value_batch.flatten() - value_batch.detach().flatten()
+                    if self.normalize_weight:
+                        weight = weight / (weight.abs().mean() + 1e-8)
                     surrogate_loss = torch.mean(
-                        torch.abs(
-                            (target_ratio.flatten() - ratio.flatten())
-                            * (q_value_batch.flatten() - value_batch.detach().flatten())
-                        )
+                        torch.abs((target_ratio.flatten() - ratio.flatten()) * weight)
                     )
                     tv_loss = torch.mean(
                         torch.abs(target_ratio.flatten() - ratio.flatten())
@@ -548,6 +575,9 @@ class BPO:
             mean_surrogate_loss += surrogate_loss.item()
             mean_entropy += entropy_batch.mean().item()
             mean_median_loss += median_loss.item()
+            mean_kl += kl_mean.item()
+            mean_adv_scale += adv_scale.item()
+            mean_reg_w += float(reg_w)
             # -- RND loss
             if mean_rnd_loss is not None:
                 mean_rnd_loss += rnd_loss.item()
@@ -561,6 +591,18 @@ class BPO:
         mean_surrogate_loss /= num_updates
         mean_entropy /= num_updates
         mean_median_loss /= num_updates
+        mean_kl /= num_updates
+        mean_adv_scale /= num_updates
+        mean_reg_w /= num_updates
+
+        # KL-controlled ratio bound: once per iteration, from the mean KL over all mini-batches
+        # (the same statistic the adaptive learning rate reacts to)
+        clip_used = self.clip_param
+        if self.clip_schedule == "adaptive" and self.desired_kl is not None:
+            if mean_kl > self.desired_kl * 2.0:
+                self.clip_param = max(self.clip_min, self.clip_param / self.clip_adapt_rate)
+            elif 0.0 < mean_kl < self.desired_kl / 2.0:
+                self.clip_param = min(self.clip_max, self.clip_param * self.clip_adapt_rate)
 
         self.mean_value_loss = mean_value_loss
         self.mean_surrogate_loss = mean_surrogate_loss
@@ -581,6 +623,10 @@ class BPO:
             "entropy": mean_entropy,
             "median": mean_median_loss,
             "kl_mean": kl_mean.item(),
+            "kl_iter_mean": mean_kl,
+            "clip_param": clip_used,
+            "reg_w": mean_reg_w,
+            "adv_scale": mean_adv_scale,
         }
         if self.rnd:
             loss_dict["rnd"] = mean_rnd_loss

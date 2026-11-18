@@ -1,0 +1,57 @@
+algo:
+  _convert_: all
+  _target_: sb3.BPO
+  policy: BPOPolicy
+  policy_kwargs:
+    ortho_init: true
+    activation_fn:
+      _target_: hydra.utils.get_class
+      path: torch.nn.ReLU
+    net_arch:
+      pi:
+      - 256
+      - 256
+      vf:
+      - 256
+      - 256
+    log_std_init: 0.0
+  learning_rate: 0.0001
+  batch_size: 128
+  n_steps: 512
+  n_epochs: 5
+  gamma: 0.99
+  gae_lambda: 0.95
+  lambda_: 0.1
+  ent_coef: 0.0
+  vf_coef: 0.5
+  u_coef: 0.5
+  clip_ratio: 0.2
+  verbose: 1
+  max_grad_norm: 2.0
+  use_median: true
+  adaptive_clip: false
+  target_kl: 0.01
+  clip_min: 0.05
+  clip_adapt_rate: 1.2
+  lambda_mode: adaptive
+  normalize_weight: false
+env:
+  _target_: sb3.env_factory.create_mujoco_env
+  env_id: Humanoid-v4
+  n_envs: 1
+  render_mode: rgb_array
+  seed: 8
+  normalize: false
+  norm_gamma: 0.99
+wandb:
+  project: BPO
+  entity: null
+  monitor_gym: true
+  save_code: true
+training:
+  total_timesteps: 5000000
+  gradient_save_freq: 100000
+  n_envs: 8
+  seed: 8
+  max_hours: null
+  resume: null

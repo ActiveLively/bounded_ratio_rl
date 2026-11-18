@@ -28,6 +28,9 @@ class RslRlBPOActorCriticCfg:
     activation: str = MISSING
     """The activation function for the actor and critic networks."""
 
+    min_std: float = 0.0
+    """Floor on the action standard deviation. 0 disables it."""
+
 
 @configclass
 class RslRlBPOAlgorithmCfg:
@@ -86,6 +89,24 @@ class RslRlBPOAlgorithmCfg:
 
     tv_loss_coef: float = 0.0
     """The coefficient for the total variation loss."""
+
+    clip_schedule: str = "fixed"
+    """"fixed", or "adaptive": the ratio bound epsilon is adjusted each iteration to hold desired_kl."""
+
+    clip_min: float = 0.05
+    """Lower limit of the adaptive ratio bound."""
+
+    clip_max: float | None = None
+    """Upper limit of the adaptive ratio bound. None uses the initial clip_param."""
+
+    clip_adapt_rate: float = 1.2
+    """Factor by which the adaptive ratio bound grows or shrinks per iteration."""
+
+    reg_w_mode: str = "fixed"
+    """"fixed", or "adaptive": lambda = reg_w * mean|Q - baseline| of the batch (reg_w is then unitless)."""
+
+    normalize_weight: bool = False
+    """Divide the |Q - V| weight of the policy loss by its batch mean."""
 
 
 @configclass

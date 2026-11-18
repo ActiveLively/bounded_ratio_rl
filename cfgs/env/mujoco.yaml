@@ -4,4 +4,6 @@ env_id: "HalfCheetah-v5"
 n_envs: 1
 render_mode: "rgb_array"
 seed: ${training.seed} # Use seed from algo config
+normalize: false # true: VecNormalize (running obs + reward normalisation)
+norm_gamma: 0.99 # discount for reward normalisation; set to algo.gamma
 

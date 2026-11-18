@@ -29,3 +29,9 @@ nohup.out
 .idea/
 .ipynb_checkpoints/
 .DS_Store
+
+# BPO-extension experiments: keep progress.csv / config.yaml / done.json, drop bulky duplicates
+runs_abpo/_logs/
+runs_abpo/**/events.out.tfevents*
+runs_abpo/**/DONE
+runs_*.log
